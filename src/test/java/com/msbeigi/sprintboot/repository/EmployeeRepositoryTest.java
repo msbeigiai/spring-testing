@@ -57,7 +57,32 @@ class EmployeeRepositoryTest {
         // then - verify the output
         assertThat(employeeList).isNotNull();
         assertThat(employeeList.size()).isEqualTo(2);
+    }
 
+    @Test
+    public void givenEmployeeObject_whenFindById_thenReturnEmployeeObject() {
+        // given - precondition or setup
+        Employee employee1 = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+
+        Employee employee2 = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john@gmail.com")
+                .build();
+
+        employeeRepository.save(employee1);
+        employeeRepository.save(employee2);
+
+        // when - action and the behaviour that we are going to test
+        Employee employee = employeeRepository.findById(1L).orElseThrow();
+
+        // then - verify the output
+        assertThat(employee).isNotNull();
+        assertThat(employee.getId()).isEqualTo(1);
     }
 
 }
