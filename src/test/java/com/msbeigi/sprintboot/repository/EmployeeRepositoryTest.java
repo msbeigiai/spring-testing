@@ -85,4 +85,22 @@ class EmployeeRepositoryTest {
         assertThat(employee.getId()).isEqualTo(1);
     }
 
+    @Test
+    public void givenEmployeeEmail_whenFindByEmail_thenReturnEmployeeObject() {
+        // given - precondition or setup
+        Employee employee1 = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        employeeRepository.save(employee1);
+
+        // when - action and the behaviour that we are going to test
+        Employee employee = employeeRepository.findByEmailIgnoreCase(employee1.getEmail()).orElseThrow();
+
+        // then - verify the output
+        assertThat(employee).isNotNull();
+        assertThat(employee.getEmail()).isEqualTo(employee1.getEmail());
+    }
+
 }
