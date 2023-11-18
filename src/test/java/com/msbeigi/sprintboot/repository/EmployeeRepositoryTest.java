@@ -211,4 +211,26 @@ class EmployeeRepositoryTest {
         assertThat(savedEmployee.get().getFirstName()).isEqualTo("Mohsen");
         assertThat(savedEmployee.get().getLastName()).isEqualTo("Sadeghbeigi");
     }
+
+    @Test
+    public void givenEmployeeObject_whenFindByFirstNameAndLastNameByNativeQueryAndNameParams_thenReturnEmployee() {
+        // given - precondition or setup
+        Employee employee1 = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        employeeRepository.save(employee1);
+
+        // when - action and the behaviour that we are going to test
+        Optional<Employee> savedEmployee =
+                employeeRepository.findByFirstNameAndLastNameWithNativeQueryAndNameParams(employee1.getFirstName(),
+                        employee1.getLastName());
+
+        // then - verify the output
+        assertThat(savedEmployee).isNotEmpty();
+        assertThat(savedEmployee.get().getEmail()).isEqualTo("mohsen@gmail.com");
+        assertThat(savedEmployee.get().getFirstName()).isEqualTo("Mohsen");
+        assertThat(savedEmployee.get().getLastName()).isEqualTo("Sadeghbeigi");
+    }
 }
