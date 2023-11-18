@@ -147,4 +147,25 @@ class EmployeeRepositoryTest {
         assertThat(mayBeEmployee).isEmpty();
     }
 
+    @Test
+    public void givenEmployeeObject_whenSaveWithCustomQuery_thenReturnEmployee() {
+        // given - precondition or setup
+        Employee employee1 = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        employeeRepository.save(employee1);
+
+        // when - action and the behaviour that we are going to test
+        Optional<Employee> savedEmployee =
+                employeeRepository.findFirstNameAndLastName(employee1.getFirstName(), employee1.getLastName());
+
+        // then - verify the output
+        assertThat(savedEmployee).isNotEmpty();
+        assertThat(savedEmployee.get().getEmail()).isEqualTo("mohsen@gmail.com");
+        assertThat(savedEmployee.get().getFirstName()).isEqualTo("Mohsen");
+        assertThat(savedEmployee.get().getLastName()).isEqualTo("Sadeghbeigi");
+    }
+
 }
