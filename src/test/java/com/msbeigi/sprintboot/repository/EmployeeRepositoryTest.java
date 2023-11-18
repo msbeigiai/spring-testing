@@ -103,4 +103,28 @@ class EmployeeRepositoryTest {
         assertThat(employee.getEmail()).isEqualTo(employee1.getEmail());
     }
 
+    @Test
+    public void givenEmployeeObject_whenUpdateEmployee_thenReturnUpdatedEmployee() {
+        // given - precondition or setup
+        Employee employee1 = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        employeeRepository.save(employee1);
+
+        // when - action and the behaviour that we are going to test
+        Employee savedEmployee = employeeRepository.findById(employee1.getId()).orElseThrow();
+
+        savedEmployee.setEmail("mohsen2@gmail.com");
+        savedEmployee.setFirstName("MohsenJan");
+        savedEmployee.setLastName("Sadegh");
+
+        Employee updatedEmployee = employeeRepository.save(savedEmployee);
+        // then - verify the output
+        assertThat(savedEmployee.getEmail()).isEqualTo(updatedEmployee.getEmail());
+        assertThat(savedEmployee.getFirstName()).isEqualTo(updatedEmployee.getFirstName());
+        assertThat(savedEmployee.getLastName()).isEqualTo(updatedEmployee.getLastName());
+    }
+
 }
