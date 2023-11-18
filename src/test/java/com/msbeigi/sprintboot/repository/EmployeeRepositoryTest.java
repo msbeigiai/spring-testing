@@ -81,21 +81,14 @@ class EmployeeRepositoryTest {
                 .email("mohsen@gmail.com")
                 .build();*/
 
-        Employee employee2 = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@gmail.com")
-                .build();
-
-        employeeRepository.save(employee);
-        employeeRepository.save(employee2);
+        Employee savedEmployee = employeeRepository.save(employee);
 
         // when - action and the behaviour that we are going to test
-        Employee employeeDb = employeeRepository.findById(1L).orElseThrow();
+        Optional<Employee> employeeDb = employeeRepository.findById(savedEmployee.getId());
 
         // then - verify the output
-        assertThat(employeeDb).isNotNull();
-        assertThat(employeeDb.getId()).isEqualTo(1);
+        assertThat(employeeDb).isNotEmpty();
+        assertThat(employeeDb.get().getId()).isEqualTo(savedEmployee.getId());
     }
 
     @Test
