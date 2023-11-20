@@ -90,7 +90,7 @@ class EmployeeServiceTest {
         given(employeeRepository.findAll()).willReturn(List.of(employee, employee2));
 
         // when - action and the behaviour that we are going to test
-        List<Employee> employees = employeeRepository.findAll();
+        List<Employee> employees = employeeService.getAllEmployees();
 
         // then - verify the output
         assertThat(employees).isNotNull();
@@ -109,10 +109,23 @@ class EmployeeServiceTest {
         given(employeeRepository.findAll()).willReturn(Collections.emptyList());
 
         // when - action and the behaviour that we are going to test
-        List<Employee> employees = employeeRepository.findAll();
+        List<Employee> employees = employeeService.getAllEmployees();
 
         // then - verify the output
         assertThat(employees).isEmpty();
         assertThat(employees.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnEmployeeObject() {
+        // given - precondition or setup
+        given(employeeRepository.findById(employee.getId())).willReturn(Optional.of(employee));
+
+        // when - action and the behaviour that we are going to test
+        Employee savedEmployee = employeeService.getEmployeeById(employee.getId());
+
+        // then - verify the output
+        assertThat(savedEmployee).isNotNull();
+        assertThat(savedEmployee.getId()).isEqualTo(employee.getId());
     }
 }
