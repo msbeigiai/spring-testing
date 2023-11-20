@@ -6,6 +6,7 @@ import com.msbeigi.sprintboot.repository.EmployeeRepository;
 import com.msbeigi.sprintboot.service.EmployeeService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,5 +26,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new ResourceNotFoundException("Employee with email " + employee.getEmail() + " already exists.");
         }
         return employeeRepository.save(employee);
+    }
+
+    @Override
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
     }
 }
