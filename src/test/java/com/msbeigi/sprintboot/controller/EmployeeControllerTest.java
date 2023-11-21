@@ -1,29 +1,26 @@
 package com.msbeigi.sprintboot.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.msbeigi.sprintboot.entity.Employee;
 import com.msbeigi.sprintboot.service.EmployeeService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
 class EmployeeControllerTest {
@@ -63,6 +60,32 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$.firstName", CoreMatchers.is(employee.getFirstName())))
                 .andExpect(jsonPath("$.lastName", CoreMatchers.is(employee.getLastName())))
                 .andExpect(jsonPath("$.email", CoreMatchers.is(employee.getEmail())));
+    }
+
+    @Test
+    public void givenListOfEmployees_whenGetAllEmployees_thenReturnListOfEmployees() throws Exception {
+        // given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        Employee employee2 = Employee.builder()
+                .firstName("Ali")
+                .lastName("Sadeghi")
+                .email("ali@gmail.com")
+                .build();
+        List<Employee> employees = List.of(employee, employee2);
+
+        given(employeeService.getAllEmployees()).willReturn(employees);
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get(BASE_URI));
+
+        // then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.size()", CoreMatchers.is(employees.size())));
     }
 }
 
