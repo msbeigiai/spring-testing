@@ -128,4 +128,21 @@ class EmployeeServiceTest {
         assertThat(savedEmployee).isNotNull();
         assertThat(savedEmployee.getId()).isEqualTo(employee.getId());
     }
+
+    @Test
+    public void givenEmployeeObject_whenUpdateEmployeeWithNewEmployee_thenReturnUpdatedEmployee() {
+        // given - precondition or setup
+        given(employeeRepository.save(employee)).willReturn(employee);
+
+        employee.setEmail("moh@gmailcom");
+        employee.setFirstName("Moh");
+
+        // when - action and the behaviour that we are going to test
+        employeeService.updateEmployee(employee);
+
+        // then - verify the output
+        assertThat(employee).isNotNull();
+        assertThat(employee.getEmail()).isEqualTo("moh@gmailcom");
+        assertThat(employee.getFirstName()).isEqualTo("Moh");
+    }
 }
