@@ -19,8 +19,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -100,12 +100,6 @@ class EmployeeServiceTest {
     @Test
     public void givenEmptyEmployeeList_whenGetAllEmployees_thenReturnEmptyEmployeesList() {
         // given - precondition or setup
-        Employee employee2 = Employee.builder()
-                .id(2L)
-                .firstName("Ali")
-                .lastName("Sadeghi")
-                .email("ali@gmail.com")
-                .build();
         given(employeeRepository.findAll()).willReturn(Collections.emptyList());
 
         // when - action and the behaviour that we are going to test
@@ -144,5 +138,17 @@ class EmployeeServiceTest {
         assertThat(employee).isNotNull();
         assertThat(employee.getEmail()).isEqualTo("moh@gmailcom");
         assertThat(employee.getFirstName()).isEqualTo("Moh");
+    }
+
+    @Test
+    public void givenEmployeeObjectId_whenDeleteEmployeeById_thenReturnsNothing() {
+        // given - precondition or setup
+        willDoNothing().given(employeeRepository).deleteById(employee.getId());
+
+        // when - action and the behaviour that we are going to test
+        employeeService.deleteEmployeeById(employee.getId());
+
+        // then - verify the output
+        verify(employeeRepository, times(1)).deleteById(employee.getId());
     }
 }
