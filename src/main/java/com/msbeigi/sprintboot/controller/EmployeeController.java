@@ -32,6 +32,9 @@ public class EmployeeController {
 
     @GetMapping("{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable("id") Long employeeId) {
+        if (employeeId == null || employeeId == 0L) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok()
                 .body(employeeService.getEmployeeById(employeeId));
     }

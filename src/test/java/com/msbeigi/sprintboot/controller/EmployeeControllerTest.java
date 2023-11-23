@@ -112,6 +112,27 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
                 .andExpect(jsonPath("$.email", is(employee.getEmail())));
     }
+
+    @Test
+    public void givenInvalidEmployeeId_whenGetEmployeeById_thenShouldReturnEmpty() throws Exception {
+        // given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        Long employeeId = 0L;
+
+        given(employeeService.getEmployeeById(employeeId)).willReturn(null);
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get(BASE_URI + "/{id}", employeeId));
+
+        // then - verify the output
+        response
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
 }
 
 
