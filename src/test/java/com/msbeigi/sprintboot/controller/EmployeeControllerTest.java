@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -57,9 +58,9 @@ class EmployeeControllerTest {
         response
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.firstName", CoreMatchers.is(employee.getFirstName())))
-                .andExpect(jsonPath("$.lastName", CoreMatchers.is(employee.getLastName())))
-                .andExpect(jsonPath("$.email", CoreMatchers.is(employee.getEmail())));
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
     }
 
     @Test
@@ -85,7 +86,31 @@ class EmployeeControllerTest {
         // then - verify the output
         response.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.size()", CoreMatchers.is(employees.size())));
+                .andExpect(jsonPath("$.size()", is(employees.size())));
+    }
+
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenShouldReturnEmployeeObject() throws Exception {
+        // given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        Long employeeId = 1L;
+
+        given(employeeService.getEmployeeById(employeeId)).willReturn(employee);
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get(BASE_URI + "/{id}", employeeId));
+
+        // then - verify the output
+        response
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
     }
 }
 
