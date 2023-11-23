@@ -3,7 +3,6 @@ package com.msbeigi.sprintboot.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.msbeigi.sprintboot.entity.Employee;
 import com.msbeigi.sprintboot.service.EmployeeService;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,9 +14,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -196,6 +196,23 @@ class EmployeeControllerTest {
         // then - verify the output
         response
                 .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    public void givenEmployeeId_whenDeleteEmployee_thenShouldDeleteAnEmployee() throws Exception {
+        // given - precondition or setup
+        Long employeeId = 1L;
+
+        willDoNothing().given(employeeService).deleteEmployeeById(employeeId);
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc
+                .perform(delete(BASE_URI + "/{id}", employeeId));
+
+        // then - verify the output
+        response
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 
