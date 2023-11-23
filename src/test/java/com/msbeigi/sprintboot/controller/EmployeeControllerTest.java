@@ -169,6 +169,36 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$.email", is(updatedEmployee.getEmail())));
     }
 
+    @Test
+    public void givenInvalidateUpdatedEmployeeObject_whenUpdateEmployee_thenNotFound() throws Exception {
+        // given - precondition or setup
+        Employee savedEmployee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        Long employeeId = 1L;
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Ali")
+                .lastName("Sadeghi")
+                .email("ali@gmail.com")
+                .build();
+
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.empty());
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc
+                .perform(put(BASE_URI + "/{id}", employeeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedEmployee))
+                );
+
+        // then - verify the output
+        response
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
 }
 
 
