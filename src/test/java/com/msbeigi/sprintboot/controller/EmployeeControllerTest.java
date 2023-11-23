@@ -13,12 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -99,7 +99,7 @@ class EmployeeControllerTest {
                 .build();
         Long employeeId = 1L;
 
-        given(employeeService.getEmployeeById(employeeId)).willReturn(employee);
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.of(employee));
 
         // when - action and the behaviour that we are going to test
         ResultActions response = mockMvc.perform(get(BASE_URI + "/{id}", employeeId));
@@ -123,7 +123,7 @@ class EmployeeControllerTest {
                 .build();
         Long employeeId = 0L;
 
-        given(employeeService.getEmployeeById(employeeId)).willReturn(null);
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.empty());
 
         // when - action and the behaviour that we are going to test
         ResultActions response = mockMvc.perform(get(BASE_URI + "/{id}", employeeId));
@@ -133,6 +133,42 @@ class EmployeeControllerTest {
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
+
+    @Test
+    public void givenUpdatedEmployeeObject_whenUpdateEmployee_thenReturnUpdateEmployeeObject() throws Exception {
+        // given - precondition or setup
+        Employee savedEmployee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        Long employeeId = 1L;
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Ali")
+                .lastName("Sadeghi")
+                .email("ali@gmail.com")
+                .build();
+
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.of(savedEmployee));
+        given(employeeService.updateEmployee(any(Employee.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc
+                .perform(put(BASE_URI + "/{id}", employeeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedEmployee))
+                );
+
+        // then - verify the output
+        response
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(updatedEmployee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(updatedEmployee.getLastName())))
+                .andExpect(jsonPath("$.email", is(updatedEmployee.getEmail())));
+    }
+
 }
 
 
