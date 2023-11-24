@@ -18,6 +18,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -196,6 +197,26 @@ public class EmployeeControllerIT {
         // then - verify the output
         response
                 .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    public void givenEmployeeId_whenDeleteEmployee_thenShouldDeleteAnEmployee() throws Exception {
+        // given - precondition or setup
+        Employee savedEmployee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        employeeRepository.save(savedEmployee);
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc
+                .perform(delete(BASE_URI + "/{id}", savedEmployee.getId()));
+
+        // then - verify the output
+        response
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }
