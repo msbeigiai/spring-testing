@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -91,5 +92,28 @@ public class EmployeeControllerIT {
         response.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.size()", is(employees.size())));
+    }
+
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenShouldReturnEmployeeObject() throws Exception {
+        // given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+
+        employeeRepository.save(employee);
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get(BASE_URI + "/{id}", employee.getId()));
+
+        // then - verify the output
+        response
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
     }
 }
