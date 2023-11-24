@@ -18,8 +18,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -130,6 +129,69 @@ public class EmployeeControllerIT {
 
         // when - action and the behaviour that we are going to test
         ResultActions response = mockMvc.perform(get(BASE_URI + "/{id}", employeeId));
+
+        // then - verify the output
+        response
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    public void givenUpdatedEmployeeObject_whenUpdateEmployee_thenReturnUpdateEmployeeObject() throws Exception {
+        // given - precondition or setup
+        Employee savedEmployee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        employeeRepository.save(savedEmployee);
+
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Ali")
+                .lastName("Sadeghi")
+                .email("ali@gmail.com")
+                .build();
+
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc
+                .perform(put(BASE_URI + "/{id}", savedEmployee.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedEmployee))
+                );
+
+        // then - verify the output
+        response
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(updatedEmployee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(updatedEmployee.getLastName())))
+                .andExpect(jsonPath("$.email", is(updatedEmployee.getEmail())));
+    }
+
+    @Test
+    public void givenInvalidateUpdatedEmployeeObject_whenUpdateEmployee_thenNotFound() throws Exception {
+        // given - precondition or setup
+        Employee savedEmployee = Employee.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+        employeeRepository.save(savedEmployee);
+        Long employeeId = 0L;
+
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Ali")
+                .lastName("Sadeghi")
+                .email("ali@gmail.com")
+                .build();
+
+        // when - action and the behaviour that we are going to test
+        ResultActions response = mockMvc
+                .perform(put(BASE_URI + "/{id}", employeeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedEmployee))
+                );
 
         // then - verify the output
         response
