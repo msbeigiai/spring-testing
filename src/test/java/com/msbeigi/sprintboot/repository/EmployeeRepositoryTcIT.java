@@ -1,7 +1,7 @@
 package com.msbeigi.sprintboot.repository;
 
 import com.msbeigi.sprintboot.entity.Employee;
-import com.msbeigi.sprintboot.integration.AbstractionBestTest;
+import com.msbeigi.sprintboot.integration.AbstractContainerBestTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class EmployeeRepositoryTcIT extends AbstractionBestTest {
+class EmployeeRepositoryTcIT extends AbstractContainerBestTest {
 
     @Autowired
     private EmployeeRepository employeeRepository;
