@@ -7,6 +7,7 @@ import com.msbeigi.webfluxtest.mapper.EmployeeMapper;
 import com.msbeigi.webfluxtest.repository.EmployeeRepository;
 import com.msbeigi.webfluxtest.service.EmployeeService;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -36,4 +37,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         Mono<Employee> savedEmployee = employeeRepository.findById(employeeId);
         return savedEmployee.map(employeeMapper);
     }
+
+    @Override
+    public Flux<EmployeeDto> getAllEmployees() {
+        return employeeRepository.findAll().map(employeeMapper);
+    }
+
 }
