@@ -132,6 +132,41 @@ class EmployeeControllerTest {
                 .expectBodyList(EmployeeDto.class)
                 .consumeWith(System.out::println);
     }
+
+    @Test
+    public void givenEmployeeDto_whenUpdateEmployeeById_thenReturnUpdatedEmployeeObject() {
+        // given - precondition or setup
+        String employeeId = "123";
+        EmployeeDto employeeDto = EmployeeDto
+                .builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen.sadegh62@gmail.com")
+                .build();
+
+        given(employeeService.updateEmployee(any(EmployeeDto.class),
+                any(String.class)))
+                .willReturn(Mono.just(employeeDto));
+
+        // when - action and the behaviour that we are going to test
+        WebTestClient.ResponseSpec responseSpec = webTestClient
+                .put()
+                .uri("/api/employees/{id}", Collections.singletonMap("id", employeeId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(employeeDto), EmployeeDto.class)
+                .exchange();
+
+        // then - verify the output
+        responseSpec
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(System.out::println)
+                .jsonPath("$.firstName").isEqualTo(employeeDto.getFirstName())
+                .jsonPath("$.lastName").isEqualTo(employeeDto.getLastName())
+                .jsonPath("$.email").isEqualTo(employeeDto.getEmail());
+    }
 }
 
 
