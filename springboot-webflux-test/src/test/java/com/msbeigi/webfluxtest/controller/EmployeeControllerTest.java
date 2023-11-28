@@ -12,9 +12,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -92,6 +94,43 @@ class EmployeeControllerTest {
                 .jsonPath("$.firstName").isEqualTo(employeeDto.getFirstName())
                 .jsonPath("$.lastName").isEqualTo(employeeDto.getLastName())
                 .jsonPath("$.email").isEqualTo(employeeDto.getEmail());
+    }
+
+    @Test
+    public void givenListOfEmployees_whenGetAllEmployees_thenReturnListOfEmployees() {
+        // given - precondition or setup
+        EmployeeDto employeeDtoFirst = EmployeeDto
+                .builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen.sadegh62@gmail.com")
+                .build();
+
+        EmployeeDto employeeDtoSecond = EmployeeDto
+                .builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen.sadegh62@gmail.com")
+                .build();
+
+        List<EmployeeDto> employeeDtos = List.of(employeeDtoFirst, employeeDtoSecond);
+
+        given(employeeService.getAllEmployees()).willReturn(Flux.fromIterable(employeeDtos));
+
+
+        // when - action and the behaviour that we are going to test
+        WebTestClient.ResponseSpec responseSpec = webTestClient
+                .get()
+                .uri("/api/employees")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange();
+
+        // then - verify the output
+        responseSpec
+                .expectStatus()
+                .isOk()
+                .expectBodyList(EmployeeDto.class)
+                .consumeWith(System.out::println);
     }
 }
 
