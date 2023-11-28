@@ -167,6 +167,27 @@ class EmployeeControllerTest {
                 .jsonPath("$.lastName").isEqualTo(employeeDto.getLastName())
                 .jsonPath("$.email").isEqualTo(employeeDto.getEmail());
     }
+
+    @Test
+    public void givenEmployeeId_whenDeleteEmployeeById_thenReturnVoidAndDeletedEmployee() {
+        // given - precondition or setup
+        String employeeId = "123";
+
+        given(employeeService.deleteEmployee(employeeId)).willReturn(Mono.empty());
+
+        // when - action and the behaviour that we are going to test
+        WebTestClient.ResponseSpec responseSpec = webTestClient
+                .delete()
+                .uri("/api/employees/{id}", Collections.singletonMap("id", employeeId))
+                .exchange();
+
+        // then - verify the output
+        responseSpec
+                .expectStatus()
+                .isNoContent()
+                .expectBody()
+                .consumeWith(System.out::println);
+    }
 }
 
 
