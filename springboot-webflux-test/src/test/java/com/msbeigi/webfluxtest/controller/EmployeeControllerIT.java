@@ -112,4 +112,40 @@ public class EmployeeControllerIT {
                 .consumeWith(System.out::println);
     }
 
+    @Test
+    public void givenEmployeeId_whenUpdateEmployeeById_thenReturnUpdatedEmployee() {
+        // given - precondition or setup
+        EmployeeDto employeeDto1 = EmployeeDto.builder()
+                .firstName("Sadegh")
+                .lastName("Mohammadi")
+                .email("sadegh.mohammadi@gmail.com")
+                .build();
+
+        EmployeeDto savedEmployee = employeeService.saveEmployee(employeeDto1).block();
+
+        EmployeeDto updatedEmployee = EmployeeDto.builder()
+                .firstName("SadeghUpdated")
+                .lastName("MohammadiUpdated")
+                .email("sadeghUpdated.mohammadi@gmail.com")
+                .build();
+
+        // when - action and the behaviour that we are going to test
+        webTestClient
+                .put()
+                .uri("/api/employees/{id}", Collections.singletonMap("id", savedEmployee.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(updatedEmployee), EmployeeDto.class)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(System.out::println)
+                .jsonPath("$.firstName").isEqualTo(updatedEmployee.getFirstName())
+                .jsonPath("$.lastName").isEqualTo(updatedEmployee.getLastName())
+                .jsonPath("$.email").isEqualTo(updatedEmployee.getEmail());
+
+        // then - verify the output
+    }
+
 }
