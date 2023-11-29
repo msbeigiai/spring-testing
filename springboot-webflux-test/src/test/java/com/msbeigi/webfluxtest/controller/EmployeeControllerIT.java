@@ -130,6 +130,8 @@ public class EmployeeControllerIT {
                 .build();
 
         // when - action and the behaviour that we are going to test
+        Assertions.assertThat(savedEmployee).isNotNull();
+
         webTestClient
                 .put()
                 .uri("/api/employees/{id}", Collections.singletonMap("id", savedEmployee.getId()))
@@ -145,6 +147,31 @@ public class EmployeeControllerIT {
                 .jsonPath("$.lastName").isEqualTo(updatedEmployee.getLastName())
                 .jsonPath("$.email").isEqualTo(updatedEmployee.getEmail());
 
+        // then - verify the output
+    }
+
+    @Test
+    public void givenEmployeeId_whenDeleteEmployeeById_thenReturnDeletedEmployee() {
+        // given - precondition or setup
+        EmployeeDto employeeDto1 = EmployeeDto.builder()
+                .firstName("Sadegh")
+                .lastName("Mohammadi")
+                .email("sadegh.mohammadi@gmail.com")
+                .build();
+
+        EmployeeDto savedEmployee = employeeService.saveEmployee(employeeDto1).block();
+
+        Assertions.assertThat(savedEmployee).isNotNull();
+
+        // when - action and the behaviour that we are going to test
+        webTestClient
+                .delete()
+                .uri("/api/employees/{id}", Collections.singletonMap("id", savedEmployee.getId()))
+                .exchange()
+                .expectStatus()
+                .isNoContent()
+                .expectBody()
+                .consumeWith(System.out::println);
         // then - verify the output
     }
 
