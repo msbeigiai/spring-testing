@@ -85,4 +85,31 @@ public class EmployeeControllerIT {
         // then - verify the output
     }
 
+    @Test
+    public void given_whenGetAllEmployees_thenReturnsListOfEmployeeObjects() {
+        EmployeeDto employeeDto1 = EmployeeDto.builder()
+                .firstName("Sadegh")
+                .lastName("Mohammadi")
+                .email("sadegh.mohammadi@gmail.com")
+                .build();
+        EmployeeDto employeeDto2 = EmployeeDto.builder()
+                .firstName("Mohsen")
+                .lastName("Sadeghbeigi")
+                .email("mohsen@gmail.com")
+                .build();
+
+        EmployeeDto savedEmployeeDto01 = employeeService.saveEmployee(employeeDto1).block();
+        EmployeeDto savedEmployeeDto02 = employeeService.saveEmployee(employeeDto2).block();
+
+        // then - verify the output
+        webTestClient
+                .get()
+                .uri("/api/employees")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(EmployeeDto.class)
+                .consumeWith(System.out::println);
+    }
+
 }
